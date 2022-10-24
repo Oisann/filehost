@@ -1,65 +1,110 @@
 <!DOCTYPE html>
 <html>
-
-<head>
-    <script type="text/javascript" class="jsbin" src="https://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
-    <script type="text/javascript" class="jsbin" src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.0/jquery-ui.min.js"></script>
-    <meta charset="utf-8">
-    <title>upload</title>
-    <script type="text/javascript">
-        function upload() {
-            var file = $('#testFile').prop('files')[0];
-            var filepath = $('#testFile').prop("files")[0]['name'];
-            console.log(file);
-            var formData = new FormData();
-            formData.append("file", file);
-            var xhr = new XMLHttpRequest();
-            if (xhr.upload) {
-                xhr.upload.addEventListener('progress', function(event) {
-                    var percent = 0;
-                    var position = event.loaded || event.position;
-                    var total = event.total;
-                    if (event.lengthComputable) {
-                        percent = Math.ceil(position / total * 100);
-                    }
-                    //update progressbar
-                    $("#progress").html(percent + "%");
-                    console.log(percent);
-                }, true);
-            }
-            xhr.onload = function() {
-                var link = document.createElement("a")
-                link.href = xhr.response 
-                link.innerText = xhr.response
-                document.getElementById("link").appendChild(link);
-            }
-            xhr.onreadystatechange = function(ev) {
-                if (xhr.readyState === 4) {
-                    if (xhr.status !== 200) {
-                        console.log(ev)
-                        document.getElementById("link").innerText = "error uploading file"
+    <head>
+        <meta charset="utf-8">
+        <title>JMR File Hosting</title>
+        <script type="text/javascript">
+            function upload() {
+                var file = document.querySelector("#testFile").files[0];
+                var filepath = document.querySelector("#testFile").files[0].name;
+                console.log(file);
+                var formData = new FormData();
+                formData.append("file", file);
+                var xhr = new XMLHttpRequest();
+                if (xhr.upload) {
+                    xhr.upload.addEventListener('progress', function(event) {
+                        var percent = 0;
+                        var position = event.loaded || event.position;
+                        var total = event.total;
+                        if (event.lengthComputable) {
+                            percent = Math.ceil(position / total * 100);
+                        }
+                        document.querySelector("#progress").innerHTML = percent + "%";
+                        console.log(percent);
+                    }, true);
+                }
+                xhr.onload = function() {
+                    var link = document.createElement("a")
+                    link.href = xhr.response
+                    link.innerText = xhr.response
+                    document.getElementById("link").appendChild(link);
+                }
+                xhr.onreadystatechange = function(ev) {
+                    if (xhr.readyState === 4) {
+                        if (xhr.status !== 200) {
+                            console.log(ev)
+                            document.getElementById("link").innerText = "error uploading file"
+                        }
                     }
                 }
+                try {
+                    let password = document.getElementById("password").value;
+                    xhr.open("POST", "{{.BaseURL}}upload?password=" + password, true);
+                    xhr.send(formData);
+                } catch(err) {
+                    document.getElementById("link").innerText += err
+                }
+
+            };
+        </script>
+        <style>
+            body {
+                background-color: rgb(24, 24, 24);
+                color: rgb(165, 165, 165);
+                margin-left: 0px;
+                margin-right: 0px;
             }
-            try {
-                xhr.open("POST", "{{.BaseURL}}upload?password={{.Key}}", true);
-                xhr.send(formData);
-            } catch(err) {
-                console.log("XD", err)
-                document.getElementById("link").innerText += err 
+            a {
+                text-decoration: none;
+                color: rgb(165, 165, 165);
+                font-weight: bold;
             }
-
-        };
-    </script>
-    <style type="text/css">
-    </style>
-</head>
-
-<body>
-    <input id="testFile" type="file">
-    <input type="button" id="uploadButton" value="Upload" onclick="upload()">
-    <div id="progress"></div>
-    <div id="link"></div>
-</body>
-
+            div.content {
+                max-width: 960px;
+                margin: auto;
+                text-align: center;
+            }
+            div.uploadForm {
+                max-width: 100rem;
+                margin: auto;
+            }
+            div.line {
+                margin: auto;
+                padding: 5px;
+            }
+            div.password {
+                max-width: 15rem;
+            }
+            footer {
+                width: 100%;
+                position: absolute;
+                bottom: 20px;
+                text-align: center;
+            }
+            @media only screen and (max-height : 220px){
+                footer {
+                    display: none;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <div class="content">
+            <h1>JMR File Hosting</h1>
+            <div class="password line">
+                Password: <input id="password" type="password" name="password" placeholder="hunter1">
+            </div>
+            <div class="file line">
+                <input id="testFile" type="file">
+            </div>
+            <div class="upload line">
+                <input type="button" id="uploadButton" value="Upload" onclick="upload()">
+            </div>
+            <div id="progress"></div>
+            <div id="link"></div>
+        </div>
+        <footer>
+            Fork of <a href="https://github.com/nuuls/filehost">nuuls/filehost</a> ❤️ by <a href="http://oisann.net/">Oisann</a>
+        </footer>
+    </body>
 </html>
