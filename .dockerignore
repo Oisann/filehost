@@ -1,0 +1,6 @@
+Dockerfile
+.gitignore
+.travis.yml
+filehost.example.json
+LICENSE
+README.md
