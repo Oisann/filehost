@@ -1,0 +1,34 @@
+name: Build and Deploy
+on: push
+#     branches:
+#       - master
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+
+    # Build and publish a docker image that is pushed to the server
+    - name: Build a new docker image release (master only)
+      uses: banool/gp-docker-action@1.0.2
+      if: github.ref == 'refs/heads/master'
+      with:
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        image-name: release
+        image-tag: latest
+
+    # Build and publish a docker image that is not pushed for the server
+    - name: Set Commit Sha Variable
+      id: vars
+      if: github.ref != 'refs/heads/master'
+      run: echo "::set-output name=sha_short::$(git rev-parse --short HEAD)"
+
+    - name: Build a custom docker image (only not on master)
+      uses: banool/gp-docker-action@1.0.2
+      if: github.ref != 'refs/heads/master'
+      with:
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        image-name: development
+        image-tag: ${{ steps.vars.outputs.sha_short }}

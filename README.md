@@ -1,6 +1,6 @@
 # filehost
 
-[![Build Status](https://api.travis-ci.org/nuuls/filehost.svg)](https://travis-ci.org/nuuls/filehost)
+This README is outdated! WIP
 
 ## how to use:
 

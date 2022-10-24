@@ -13,7 +13,6 @@ FROM scratch
 WORKDIR /etc/ssl/certs
 COPY --from=ALPINE /etc/ssl/certs/ca-certificates.crt .
 WORKDIR /
-COPY filehost.json .
 COPY upload.html .
 COPY --from=BUILDER /go/src/filehost/main .
 CMD ["./main"]
