@@ -284,6 +284,7 @@ func serveFile(w http.ResponseWriter, r *http.Request) {
 	}
 	w.Header().Set("X-Content-Type-Options", "nosniff")
 	w.Header().Set("Content-Type", mimeType)
+	w.Header().Set("Cache-Control", "max-age=604800, public") // 7 days
 
 	http.ServeContent(w, r, "", time.Time{}, file)
 }
